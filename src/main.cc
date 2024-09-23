@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 {
 
         // Redirect redirect("engine_error_output.txt");
-        run_tests();
-        // bot();
+        // run_tests();
+        bot();
         return EXIT_SUCCESS;
 }

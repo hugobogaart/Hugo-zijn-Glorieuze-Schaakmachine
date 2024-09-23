@@ -14,7 +14,7 @@
 
 // for the table generator
 // #define ALL_CALC
-#ifdef ALL_CALC
+#if defined(ALL_CALC) || !defined(__BMI2__)
 constexpr CalculationType free_ray_ct    = CalculationType::calculation;
 constexpr CalculationType w_blocked_ray_ct = CalculationType::calculation;
 constexpr CalculationType free_straights_ct = CalculationType::calculation;
@@ -23,8 +23,8 @@ constexpr CalculationType w_blocked_diagonals_ct = CalculationType::calculation;
 constexpr CalculationType w_blocked_straights_ct  = CalculationType::calculation;
 
 #else
-constexpr CalculationType free_ray_ct    = CalculationType::calculation;
-constexpr CalculationType w_blocked_ray_ct = CalculationType::calculation;
+constexpr CalculationType free_ray_ct    = CalculationType::lookup_table;
+constexpr CalculationType w_blocked_ray_ct = CalculationType::lookup_table;
 
 constexpr CalculationType free_straights_ct = CalculationType::lookup_table;
 constexpr CalculationType free_diagonals_ct = CalculationType::lookup_table;
