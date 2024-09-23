@@ -1,0 +1,35 @@
+*   not important
+**  important
+*** very important
+
+**
+seperate get_existing_writer/get_node_writer in the alpha-beta function
+
+**
+limit the Node Proxy to handling the bare minimum
+no alpha-beta logic in the class
+
+**
+make the UCI engine a class with member functions
+so that the engine can send info properly
+the function pointer is hacky asfuck
+maybe use <functional>?
+
+
+**
+keep track of total nodes and nps in the engine
+
+*
+multithreading support
+
+**
+move TransTable::MegaByte -> ::MegaByte
+
+**
+faster output after stop
+make a dedicated "worker killer" thread
+
+**
+clean up the bit function with the macros and lookup tables etc.
+(todo weak-diagonals)
+also seperate header for the calculation-table switches?
