@@ -4,7 +4,7 @@
 # -mno-omit-leaf-frame-pointer
 
 cmake_minimum_required(VERSION 3.26)
-# set(CMAKE_OSX_ARCHITECTURES "arm64")
+set(CMAKE_OSX_ARCHITECTURES "arm64")
 project(GlorieuzeSchaakMachine CXX)
 set(CMAKE_CXX_STANDARD 23)
 

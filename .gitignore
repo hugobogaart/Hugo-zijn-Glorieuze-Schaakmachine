@@ -2,3 +2,5 @@
 /cmake-build-release
 /.idea
 /tables/generate_tables
+/cmake-build-relwithdebinfo/
+.DS_Store
