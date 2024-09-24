@@ -546,7 +546,8 @@ auto Engine::alpha_beta_col (const PositionHashPair &pos_hash, Eval alpha, Eval 
 
         MoveList move_list;
         //generate_moves2<col>(pos_hash.pos, move_list);
-        generate_moves_sorted<col>(pos_hash.pos, move_list);
+        // generate_moves_sorted<col>(pos_hash.pos, move_list);
+        generate_moves<col>(pos_hash.pos, move_list);
 
         // the node holds a valid move if we have a hit, and the eval is not mate and depth > 0
         // swap the best move with the front move, if applicable

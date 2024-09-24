@@ -64,51 +64,6 @@ auto static_eval (const Position &board) -> Eval;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
-template <Color col>
-constexpr
-auto eval_deep_col (const Position &board, unsigned int layers_beyond) -> Eval
-{
-        if (layers_beyond == 0) {
-                return static_eval(board);
-        }
-
-        // white wants a high eval, black low
-        auto better = [](const Eval s1, const Eval s2) -> bool {
-                return white_black<col>(s1 > s2, s2 > s1);
-        };
-
-        constexpr Eval worst = white_black<col>(worst_white, worst_black);
-
-        MoveList mlist;
-        generate_moves<col>(board, mlist);
-
-        // if we cannot make a move there is mate or something
-        // otherwise, any first move will be better
-        Eval best = worst;
-
-        std::for_each(mlist.begin(), mlist.end(), [&](Move mv) -> void {
-                Position pos = board;
-                make_move_unsafe<col>(mv, pos);
-                const float sub = eval_deep_col<!col>(pos, layers_beyond - 1);
-                if (better(sub, best)) {
-                        best = sub;
-                }
-        });
-
-        return best;
-}
-
-
-constexpr
-auto eval_deep (const Position &board, unsigned int layers_beyond) -> Eval
-{
-        if (board.meta.active == Color::white)
-                return eval_deep_col<Color::white>(board, layers_beyond);
-        return eval_deep_col<Color::black>(board, layers_beyond);
-}
-*/
-
 
 // heuristic constants
 // unit centi pawn
@@ -145,7 +100,6 @@ constexpr int attack_other_king_val = 40;
 
 // heuristic evaluation method
 template <Color col>  // col to move
-[[nodiscard, gnu::pure]]
 constexpr
 auto eval_col (const Position &board) -> Eval
 {
@@ -273,138 +227,10 @@ auto eval_col (const Position &board) -> Eval
         return score;
 }
 
-
-[[nodiscard, gnu::pure]]
 inline
 auto static_eval(const Position &board) -> Eval
 {
         return truncated(eval_col<Color::white>(board) - eval_col<Color::black>(board));
 }
-
-/*
-struct Res {
-        Move best_mv;
-        Eval ev;
-};
-
-template <Color col>
-Res alphabeta_col (const Position &board, Eval alpha, Eval beta, int ply)
-{
-        constexpr bool is_white = col == Color::white;
-
-        if (ply == 0) {
-                return {Move{}, static_eval(board)};
-        }
-
-        auto is_better_then = [] (Eval l, Eval r) {
-                return white_black<col>(l > r , l < r);
-        };
-
-
-        // alpha is a guaranteed best eval that white can force
-        // beta for black
-
-        // if we are white, we set alpha to the best subscore we encounter
-        // if the eval is better than beta, black could have already made a move that
-        //      would have refuted this continuation, so we are in dead teritory anyway
-
-        MoveList mlist;
-        generate_moves<col>(board, mlist);
-        Res res;
-        res.ev = white_black<col>(worst_white, worst_black);
-
-        for (auto mv : mlist) {
-                Position next_pos = board;
-                make_move_unsafe<col>(mv, next_pos);
-                Res subres = alphabeta_col<!col>(next_pos, alpha, beta, ply - 1);
-                if (is_better_then(subres.ev, res.ev)) {
-                        res.ev = subres.ev;
-                        res.best_mv = mv;
-                }
-
-                // cutoff
-                if (white_black<col>(subres.ev > beta, subres.ev < alpha))
-                        break;
-
-
-                if constexpr (is_white) {
-                        alpha = std::max(alpha, subres.ev);
-                } else {
-                        beta = std::min(beta, subres.ev);
-                }
-        }
-        return res;
-}
-
-
-inline
-Res alphabeta (const Position &root, int ply)
-{
-        if (root.meta.active == Color::white)
-                return alphabeta_col<Color::white>(root, worst_white, worst_black, ply);
-        return alphabeta_col<Color::black>(root, worst_white, worst_black, ply);
-}
-
-
-template <Color col>
-Res alphabeta_col_failhard (const Position &board, Eval alpha, Eval beta, int ply)
-{
-        constexpr bool is_white = col == Color::white;
-
-        if (ply == 0) {
-                return {Move{}, static_eval(board)};
-        }
-
-        auto is_better_then = [] (Eval l, Eval r) {
-                return white_black<col>(l > r , l < r);
-        };
-
-
-        // alpha is a guaranteed best eval that white can force
-        // beta for black
-
-        // if we are white, we set alpha to the best subscore we encounter
-        // if the eval is better than beta, black could have already made a move that
-        //      would have refuted this continuation, so we are in dead teritory anyway
-
-        // we prune all moves that are "too good" and the opponent can disallow anyway
-
-        MoveList mlist;
-        generate_moves<col>(board, mlist);
-        Res res;
-        res.ev = white_black<col>(worst_white, worst_black);
-
-        for (auto mv : mlist) {
-                Position next_pos = board;
-                make_move_unsafe<col>(mv, next_pos);
-                Res subres = alphabeta_col_failhard<!col>(next_pos, alpha, beta, ply - 1);
-                if (is_better_then(subres.ev, res.ev)) {
-                        res.ev = subres.ev;
-                        res.best_mv = mv;
-                }
-
-                // update the boundary
-                if constexpr (is_white) {
-                        alpha = std::max(alpha, subres.ev);
-                } else {
-                        beta = std::min(beta, subres.ev);
-                }
-
-                // cutoff
-                if (white_black<col>(subres.ev > beta, subres.ev < alpha))
-                        return res;
-        }
-        return res;
-}
-
-inline
-Res alphabeta_failhard (const Position &root, int ply)
-{
-        if (root.meta.active == Color::white)
-                return alphabeta_col_failhard<Color::white>(root, worst_white, worst_black, ply);
-        return alphabeta_col_failhard<Color::black>(root, worst_white, worst_black, ply);
-}
-
-*/
 
 #endif //BOT_DEV_EVAL_H

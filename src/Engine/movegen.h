@@ -28,12 +28,12 @@ auto maybe_make_move (Move cpm, const Position &board) -> std::optional<Position
 // produces total nonsense if used for invalid input
 template <Color col>
 [[deprecated]]
-constexpr
+inline
 auto make_move_unsafe(Move cpm, Position &board) -> void;
 
 // this overload
 template <Color col>
-constexpr
+inline
 auto make_move_unsafe(Move cpm, PositionHashPair &pos_hash) -> void;
 
 constexpr size_t maxMoves = 256;
@@ -93,7 +93,7 @@ struct MoveList {
 
 
 template <Color col>
-constexpr
+inline
 auto generate_moves (const Position &pos, MoveList &move_list) -> void;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ auto maybe_make_move(Move cpm, const Position &board) -> std::optional<Position>
 }
 
 template <Color col>
-constexpr
+inline
 auto make_move_unsafe(Move cpm, Position &board) -> void
 {
         const OneSquare from = cpm.from_square();
@@ -309,7 +309,7 @@ auto make_move_unsafe(Move cpm, Position &board) -> void
 }
 
 template <Color col>
-constexpr
+inline
 auto make_move_unsafe(Move cpm, PositionHashPair &pos_hash) -> void
 {
         using namespace HashConstants;
@@ -641,9 +641,9 @@ auto make_move_unsafe(Move cpm, PositionHashPair &pos_hash) -> void
         meta.set_pawn_2fwd(8);
 }
 
-
+/*
 template <Color col>
-constexpr
+inline
 auto generate_moves (const Position &pos, MoveList &move_list) -> void
 {
         // TODO don't check for legality afterwards but mark all attacked squares and pinned pieces
@@ -695,13 +695,12 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
                 // two forward
                 // two diagonals, maybe en passent or maybe promoting
                 else if (pos.pawns<col>() & move_from) {
-                        /* pawn */
+                        // pawn
 
-                        /*
-                         *  for promotion, we only have to check if one of the promotions is allowed, then they are all allowed
-                         *  they can happen together with any other move, except 2 fwd or en passant
-                         *  4 variations, Q, R, H, B
-                         */
+
+                        //  for promotion, we only have to check if one of the promotions is allowed, then they are all allowed
+                        // they can happen together with any other move, except 2 fwd or en passant
+                        // variations, Q, R, H, B
 
                         constexpr auto promotion_rank = white_black<col>(msk::rank[7], msk::rank[0]);
                         constexpr auto pawn_start_rank = white_black<col>(msk::rank[1], msk::rank[6]);
@@ -800,7 +799,8 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
                         if (move_to & all_hostile) {
                                 // the move_to square exists and
                                 // there is a piece there to capture
-                                /* normal capture */
+
+                                // normal capture
                                 prop.pawns<col>() ^= move_from;    // remove the initial pawn
                                 prop.pawns<col>() ^= move_to;       // and add it in
                                 prop.set_all_0<other_col>(move_to);    // capture anything
@@ -887,12 +887,6 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
 
                 // rooks -> only straights
                 else if (move_from & pos.rooks<col>()) {
-                        /*
-                        all_available  = get_weakly_blocked_ray<north>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<east>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<south>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<west>(move_from, total);
-                        */
                         all_available = get_weakly_blocked_straights(move_from, total);
                         all_available &= ~all_friendly;
                         to_piece_field = &prop.rooks<col>();
@@ -900,12 +894,7 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
 
                 // bishop -> only diagonals
                 else if (move_from & pos.bishops<col>()) {
-                        /*
-                        all_available  = get_weakly_blocked_ray<northEast>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<southEast>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<southWest>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<northWest>(move_from, total);
-                        */
+
                         all_available = get_weakly_blocked_diagonals(move_from, total);
                         all_available &= ~all_friendly;
                         to_piece_field = &prop.bishops<col>();
@@ -913,16 +902,6 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
 
                 // queen -> both straights and diagonals
                 else if (move_from & pos.queen<col>()) {
-                        /*
-                        all_available  = get_weakly_blocked_ray<north>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<east>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<south>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<west>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<northEast>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<southEast>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<southWest>(move_from, total);
-                        all_available |= get_weakly_blocked_ray<northWest>(move_from, total);
-                        */
                         all_available  = get_weakly_blocked_straights(move_from, total);
                         all_available |= get_weakly_blocked_diagonals(move_from, total);
                         all_available &= ~all_friendly;
@@ -930,7 +909,7 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
                 }
 
                 // king -> normal moves and castling
-                else /*if (move_from & pos.king<col>()) */ {
+                else { // if (move_from & pos.king<col>()) {
                         // the normal moves
                         all_available  = get_king_area(move_from) & ~all_friendly;
                         to_piece_field = &prop.king<col>();
@@ -1013,7 +992,7 @@ auto generate_moves (const Position &pos, MoveList &move_list) -> void
 
 
 template <Color col>
-constexpr
+inline
 auto generate_moves2 (const Position &pos, MoveList &move_list) -> void
 {
         // not micro optimized
@@ -1274,12 +1253,14 @@ auto generate_moves2 (const Position &pos, MoveList &move_list) -> void
                                         // move_list.emplace_back(from, *reinterpret_cast<const OneSquare *>(&to), Move::EnPassant);
                                         move_list.emplace_back(from, OneSquare_unsafe(to), Move::EnPassant);
 
-                                } /* else if (from & king) {
+                                }
+                                #if 0 else if (from & king) {
                                         // the king may not capture a defended piece
                                         if ((active_attacker & pos.defend_map<other_col>()) == 0ull) {
                                                 move_list.emplace_back(from, active_attacker);
                                         }
-                                } */
+                                }
+                                #endif
                                 else {
                                         move_list.emplace_back(from, active_attacker);
                                 }
@@ -1511,11 +1492,12 @@ auto generate_moves2 (const Position &pos, MoveList &move_list) -> void
                 }
         }
 }
-
+*/
 
 template <Color col>
-constexpr
-auto generate_moves_sorted (const Position &pos, MoveList &move_list) -> void
+inline
+// auto generate_moves_sorted (const Position &pos, MoveList &move_list) -> void
+auto generate_moves (const Position &pos, MoveList &move_list) -> void
 {
         // not micro optimized
 

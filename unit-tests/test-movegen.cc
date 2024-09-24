@@ -30,7 +30,8 @@ auto perft_col (const Position &position, int ply) -> size_t
 
         MoveList mlist;
         //generate_moves2<col>(position, mlist);
-        generate_moves_sorted<col>(position, mlist);
+        // generate_moves_sorted<col>(position, mlist);
+        generate_moves<col>(position, mlist);
 
         size_t count = 0;
         for (Move mv : mlist) {
@@ -60,6 +61,7 @@ auto perft (const Position &position, int ply) -> size_t
         return perft_col<Color::black>(position, ply);
 }
 
+/*
 template <Color col>
 auto perft_compare_col (const Position &position, int ply) -> size_t
 {
@@ -67,8 +69,8 @@ auto perft_compare_col (const Position &position, int ply) -> size_t
                 return 1;
 
         MoveList mlist, mlist2;
-        generate_moves<col>(position, mlist);
-        generate_moves2<col>(position, mlist2);
+        // generate_moves<col>(position, mlist);
+        generate_moves<col>(position, mlist2);
 
         size_t count = 0;
 
@@ -128,7 +130,7 @@ auto perft_compare (const Position &position, int ply) -> void
         else
                 perft_compare_col<Color::black>(position, ply);
 }
-
+*/
 auto test_perft () -> void
 {
         // tests the movegen on a position up to a maximum ply, given some results
